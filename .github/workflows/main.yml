@@ -20,21 +20,17 @@ jobs:
         run: |
           mkdir -p extracted_project
           unzip -o TRYxDEVIL-Mod-1.21.10-Fabric-buildable.zip -d extracted_project
-          # Find where gradlew actually is located after extraction
-          GRADLEW_PATH=$(find extracted_project -name gradlew -type f -print -quit)
-          PROJECT_DIR=$(dirname "$GRADLEW_PATH")
-          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ${{ env.PROJECT_DIR }}/gradlew
+        run: chmod +x extracted_project/tryxdevil-mod/gradlew
 
       - name: Build mod
-        run: cd ${{ env.PROJECT_DIR }} && ./gradlew build
+        run: cd extracted_project/tryxdevil-mod && ./gradlew build
 
       - name: Upload JAR files
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: TRYxDEVIL-Mod-JAR
-          path: '**/build/libs/*.jar'
+          path: extracted_project/tryxdevil-mod/build/libs/*.jar
           
