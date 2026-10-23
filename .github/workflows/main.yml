@@ -16,26 +16,21 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Extract project ZIP
+      - name: Extract project files from ZIP
         run: |
-          unzip -o TRYxDEVIL-Mod-1.21.10-Fabric-buildable.zip -d project
-          find project -name gradlew -exec chmod +x {} \;
+          unzip -o TRYxDEVIL-Mod-1.21.10-Fabric-buildable.zip -d extracted_project
+          # Move files out of the subfolder to the root if needed, or adjust structure
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x extracted_project/gradlew
 
       - name: Build mod
-        run: |
-          cd project
-          GRADLEW=$(find . -name gradlew -type f | head -n 1)
-          if [ -z "$GRADLEW" ]; then
-            echo "ERROR: No Gradle wrapper found in ZIP"
-            exit 1
-          fi
-          cd "$(dirname "$GRADLEW")"
-          ./gradlew build
+        run: cd extracted_project && ./gradlew build
 
       - name: Upload JAR files
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: TRYxDEVIL-Mod-JAR
-          path: project/**/*.jar
+          path: extracted_project/build/libs/*.jar
           
